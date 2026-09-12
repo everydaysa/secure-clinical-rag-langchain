@@ -20,5 +20,6 @@ logs/
 
 # direnv
 .envrc
-docs/INTERVIEW-NOTES.md
-docs/INTERVIEW-NOTES.md
+
+# Local working notes
+docs/
