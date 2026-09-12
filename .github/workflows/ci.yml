@@ -1,0 +1,49 @@
+name: CI
+
+# The whole suite runs offline against the mock provider, so CI needs no Azure
+# credentials, no secrets, and costs nothing.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m spacy download en_core_web_sm
+
+      - name: Unit tests
+        env:
+          LLM_PROVIDER: mock
+        run: python -m pytest
+
+      - name: Build offline index
+        env:
+          LLM_PROVIDER: mock
+        run: python scripts/ingest.py
+
+      - name: Retrieval and access-control evals
+        env:
+          LLM_PROVIDER: mock
+        run: python scripts/evaluate.py
+
+      - name: Check no secrets are committed
+        run: |
+          if git ls-files | grep -qx '.env'; then
+            echo "::error::.env is tracked in git"
+            exit 1
+          fi

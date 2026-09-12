@@ -1,0 +1,64 @@
+# Evaluation cases for the clinical RAG assistant.
+#
+# Checks are split by what they depend on:
+#   retrieval checks (retrieves / forbids / phi) are deterministic and run
+#     under any provider, including the offline mock;
+#   answer checks (refuses / contains / cites) depend on the language model and
+#     are skipped when LLM_PROVIDER=mock, since the mock returns a fixed string.
+
+- id: imaging-criteria
+  role: claims_analyst
+  question: When is an MRI covered for low back pain?
+  retrieves: [POL-IMG-004]
+  contains: ["6 weeks"]
+  cites: [POL-IMG-004]
+  refuses: false
+
+- id: imaging-with-phi
+  role: claims_analyst
+  question: Is an MRI covered for John Smith, DOB 3/4/1961, after 8 weeks of PT?
+  phi: [PERSON, DATE_OF_BIRTH]
+  retrieves: [POL-IMG-004]
+  cites: [POL-IMG-004]
+  refuses: false
+
+- id: behavioral-health-denied
+  role: claims_analyst
+  question: How many outpatient behavioral health visits before prior authorization?
+  forbids: [POL-BEH-002]
+  refuses: true
+
+- id: behavioral-health-permitted
+  role: clinician
+  question: How many outpatient behavioral health visits before prior authorization?
+  retrieves: [POL-BEH-002]
+  contains: ["20"]
+  cites: [POL-BEH-002]
+  refuses: false
+
+- id: behavioral-health-member-services
+  role: member_services
+  question: How many outpatient behavioral health visits before prior authorization?
+  forbids: [POL-BEH-002]
+  refuses: true
+
+- id: cpap-adherence
+  role: member_services
+  question: What is the CPAP adherence requirement for continued coverage?
+  retrieves: [POL-DME-007]
+  contains: ["21", "4 hours"]
+  cites: [POL-DME-007]
+  refuses: false
+
+- id: appeal-window
+  role: member_services
+  question: How long do I have to file an appeal after a denial?
+  retrieves: [FAQ-MEM-001]
+  contains: ["60"]
+  cites: [FAQ-MEM-001]
+  refuses: false
+
+- id: out-of-scope
+  role: clinician
+  question: What is the plan's dental implant coverage?
+  refuses: true

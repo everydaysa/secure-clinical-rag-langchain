@@ -1,0 +1,25 @@
+# Core LangChain stack
+langchain==1.4.0
+langchain-core==1.6.3
+langchain-openai==1.6.2
+langchain-text-splitters==1.1.2
+langgraph==1.2.11
+
+# Vector store
+langchain-chroma==1.1.0
+chromadb==1.5.9
+
+# PHI detection (spaCy model installed separately, see README)
+presidio-analyzer==2.2.364
+spacy>=3.8,<4
+
+# Azure keyless authentication
+azure-identity>=1.19,<2
+
+# Tests and evaluation
+pytest>=8,<9
+
+# Configuration and corpus metadata
+pydantic-settings>=2.6,<3
+python-dotenv>=1.0,<2
+PyYAML>=6.0,<7
